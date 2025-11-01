@@ -53,7 +53,7 @@ const ProductList: React.FC = () => {
             onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.01)")}
             onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
           >
-            <h3>{sub.productName || "Unnamed Product"}</h3>
+            <h3>{sub.name || "Unnamed Product"}</h3>
             <p><strong>Category:</strong> {sub.category}</p>
             <p><strong>Price:</strong> ${sub.price || "N/A"}</p>
             <p><strong>Submitted On:</strong> {new Date(sub.createdAt).toLocaleString()}</p>
