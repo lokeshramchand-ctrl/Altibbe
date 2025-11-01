@@ -1,12 +1,12 @@
 const mongoose = require("mongoose");
 
 const submissionSchema = new mongoose.Schema({
-  productId: { type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true },
-  companyId: { type: mongoose.Schema.Types.ObjectId, ref: "Company", required: true },
+  category: { type: String, required: true },
+  companyId: { type: mongoose.Schema.Types.ObjectId, ref: "Company" },
   answers: [
     {
       question: String,
-      answer: mongoose.Schema.Types.Mixed,
+      answer: String,
     },
   ],
   createdAt: { type: Date, default: Date.now },

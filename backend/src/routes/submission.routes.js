@@ -1,7 +1,11 @@
 const express = require("express");
 const router = express.Router();
-const { createSubmission } = require("../controllers/submission.controller");
+const submissionController = require("../controllers/submission.controller");
 
-router.post("/:productId", createSubmission);
+// Submit answers for a category
+router.post("/:category", submissionController.createSubmissionByCategory);
+
+// Get all submissions for a specific category
+router.get("/:category", submissionController.getSubmissionsByCategory);
 
 module.exports = router;

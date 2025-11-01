@@ -1,48 +1,77 @@
 import React, { useState } from "react";
 import api from "../api/api";
+import DynamicQuestionForm from "../pages/DynamicQuestionForm";
 
 const ProductForm: React.FC = () => {
   const [step, setStep] = useState(1);
   const [data, setData] = useState({
     name: "",
     category: "",
-    price: 0,
+    price: "",
   });
+  const [questions, setQuestions] = useState<any[]>([]);
+  const [answers, setAnswers] = useState<{ [key: string]: any }>({});
 
+  // ✅ Update input values dynamically
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const target = e.target as HTMLInputElement | HTMLSelectElement;
-    const { name, value } = target;
+    const { name, value } = e.target;
+    setData((prev) => ({ ...prev, [name]: value }));
+  };
 
-    if (target instanceof HTMLInputElement && target.type === "checkbox") {
-      setData((prev) => ({ ...prev, [name]: target.checked }));
-    } else {
-      setData((prev) => ({ ...prev, [name]: value }));
+  // ✅ Fetch category-based questions
+  const fetchQuestions = async () => {
+    if (!data.category) {
+      alert("⚠️ Please select a category first!");
+      return;
+    }
+
+    try {
+      const res = await api.get(`/api/questions/${data.category}`);
+      setQuestions(res.data);
+      setStep(2);
+    } catch (err) {
+      console.error("❌ Failed to load questions:", err);
+      alert("Failed to load questions!");
     }
   };
 
-  const next = () => setStep((s) => s + 1);
-  const prev = () => setStep((s) => s - 1);
-
+  // ✅ Submit category-based answers
   const handleSubmit = async () => {
     try {
-      await api.post("/api/products", data);
-      alert("✅ Product submitted successfully!");
-      setData({
-        name: "",
-        category: "",
-        price: 0,
+      if (!data.category) {
+        alert("⚠️ Please select a category before submitting!");
+        return;
+      }
+
+      // Transform answers object → array for backend
+      const formattedAnswers = Object.entries(answers).map(([question, answer]) => ({
+        question,
+        answer,
+      }));
+
+      console.log("📝 Submitting answers:", formattedAnswers);
+
+      const res = await api.post(`/api/submissions/${data.category}`, {
+        answers: formattedAnswers,
       });
+
+      console.log("✅ Backend response:", res.data);
+
+      alert("✅ Answers submitted successfully!");
       setStep(1);
-    } catch (err) {
-      console.error(err);
-      alert("❌ Failed to submit product");
+      setData({ name: "", category: "", price: "" });
+      setAnswers({});
+    } catch (err: any) {
+      console.error("💥 Submission failed:", err.response?.data || err.message);
+      alert("❌ Error submitting answers!");
     }
   };
 
   return (
-    <div style={{ maxWidth: 600, margin: "40px auto", padding: 20, border: "1px solid #ccc", borderRadius: 8 }}>
+    <div style={{ maxWidth: 600, margin: "auto" }}>
       <h2>Step {step}</h2>
 
+      {/* Step 1: Basic Product Info */}
       {step === 1 && (
         <>
           <input
@@ -50,32 +79,33 @@ const ProductForm: React.FC = () => {
             placeholder="Product Name"
             onChange={handleChange}
             value={data.name}
-            style={{ display: "block", width: "100%", marginBottom: 10 }}
           />
-
           <select name="category" value={data.category} onChange={handleChange}>
             <option value="">Select category</option>
             <option value="Electronics">Electronics</option>
             <option value="Food">Food</option>
+            <option value="Clothing">Clothing</option>
           </select>
-
-          <button onClick={next}>Next</button>
-        </>
-      )}
-      {step === 2 && (
-        <>
           <input
-            type="number"
             name="price"
             placeholder="Price"
-            onChange={handleChange}
             value={data.price}
-            style={{ display: "block", width: "100%", marginBottom: 10 }}
+            onChange={handleChange}
           />
-
-          <button onClick={prev}>Back</button>
-          <button onClick={handleSubmit}>Submit</button>
+          <button onClick={fetchQuestions}>Next</button>
         </>
+      )}
+
+      {/* Step 2: Dynamic Questions */}
+      {step === 2 && (
+        <DynamicQuestionForm
+          questions={questions}
+          onBack={() => setStep(1)}
+          onSubmit={(ans) => {
+            setAnswers(ans);
+            handleSubmit();
+          }}
+        />
       )}
     </div>
   );
