@@ -10,6 +10,7 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
+const reportRoutes = require("./routes/report.routes");
 const authRoutes = require("./routes/auth.routes");
 const productRoutes = require("./routes/product.routes");
 const questionRoutes = require("./routes/question.routes");
