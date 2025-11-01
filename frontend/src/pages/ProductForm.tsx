@@ -6,8 +6,6 @@ const ProductForm: React.FC = () => {
   const [data, setData] = useState({
     name: "",
     category: "",
-    hasVariants: false,
-    variants: "",
     price: 0,
   });
 
@@ -32,8 +30,6 @@ const ProductForm: React.FC = () => {
       setData({
         name: "",
         category: "",
-        hasVariants: false,
-        variants: "",
         price: 0,
       });
       setStep(1);
@@ -57,12 +53,7 @@ const ProductForm: React.FC = () => {
             style={{ display: "block", width: "100%", marginBottom: 10 }}
           />
 
-          <select
-            name="category"
-            value={data.category}
-            onChange={handleChange}
-            style={{ display: "block", width: "100%", marginBottom: 10 }}
-          >
+          <select name="category" value={data.category} onChange={handleChange}>
             <option value="">Select category</option>
             <option value="Electronics">Electronics</option>
             <option value="Food">Food</option>
@@ -71,35 +62,7 @@ const ProductForm: React.FC = () => {
           <button onClick={next}>Next</button>
         </>
       )}
-
       {step === 2 && (
-        <>
-          <label style={{ display: "block", marginBottom: 10 }}>
-            <input
-              type="checkbox"
-              name="hasVariants"
-              checked={data.hasVariants}
-              onChange={handleChange}
-            />{" "}
-            Has Variants?
-          </label>
-
-          {data.hasVariants && (
-            <input
-              name="variants"
-              placeholder="Enter variants (comma separated)"
-              onChange={handleChange}
-              value={data.variants}
-              style={{ display: "block", width: "100%", marginBottom: 10 }}
-            />
-          )}
-
-          <button onClick={prev}>Back</button>
-          <button onClick={next}>Next</button>
-        </>
-      )}
-
-      {step === 3 && (
         <>
           <input
             type="number"
