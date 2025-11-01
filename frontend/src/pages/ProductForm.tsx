@@ -35,37 +35,36 @@ const ProductForm: React.FC = () => {
     }
   };
 
-  // ✅ Submit category-based answers
-  const handleSubmit = async () => {
-    try {
-      if (!data.category) {
-        alert("⚠️ Please select a category before submitting!");
-        return;
-      }
-
-      // Transform answers object → array for backend
-      const formattedAnswers = Object.entries(answers).map(([question, answer]) => ({
-        question,
-        answer,
-      }));
-
-      console.log("📝 Submitting answers:", formattedAnswers);
-
-      const res = await api.post(`/api/submissions/${data.category}`, {
-        answers: formattedAnswers,
-      });
-
-      console.log("✅ Backend response:", res.data);
-
-      alert("✅ Answers submitted successfully!");
-      setStep(1);
-      setData({ name: "", category: "", price: "" });
-      setAnswers({});
-    } catch (err: any) {
-      console.error("💥 Submission failed:", err.response?.data || err.message);
-      alert("❌ Error submitting answers!");
+  const handleSubmit = async (submittedAnswers: Record<string, any>) => {
+  try {
+    if (!data.category) {
+      alert("⚠️ Please select a category before submitting!");
+      return;
     }
-  };
+
+    // Convert object → array
+    const formattedAnswers = Object.entries(submittedAnswers).map(([question, answer]) => ({
+      question,
+      answer,
+    }));
+
+    console.log("📝 Submitting formatted answers:", formattedAnswers);
+
+    const res = await api.post(`/api/submissions/${data.category}`, {
+      answers: formattedAnswers,
+    });
+
+    console.log("✅ Backend response:", res.data);
+    alert("✅ Answers submitted successfully!");
+    setStep(1);
+    setData({ name: "", category: "", price: "" });
+    setAnswers({});
+  } catch (err: any) {
+    console.error("💥 Submission failed:", err.response?.data || err.message);
+    alert("❌ Error submitting answers!");
+  }
+};
+
 
   return (
     <div style={{ maxWidth: 600, margin: "auto" }}>
@@ -101,11 +100,9 @@ const ProductForm: React.FC = () => {
         <DynamicQuestionForm
           questions={questions}
           onBack={() => setStep(1)}
-          onSubmit={(ans) => {
-            setAnswers(ans);
-            handleSubmit();
-          }}
+          onSubmit={(ans) => handleSubmit(ans)} // pass answers directly
         />
+
       )}
     </div>
   );

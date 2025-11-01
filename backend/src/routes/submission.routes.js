@@ -7,5 +7,6 @@ router.post("/:category", submissionController.createSubmissionByCategory);
 
 // Get all submissions for a specific category
 router.get("/:category", submissionController.getSubmissionsByCategory);
+router.get("/", submissionController.getAllSubmissions);
 
 module.exports = router;

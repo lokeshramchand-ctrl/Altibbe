@@ -45,3 +45,13 @@ exports.getSubmissionsByCategory = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+exports.getAllSubmissions = async (req, res) => {
+  try {
+    const submissions = await Submission.find();
+    res.status(200).json(submissions);
+  } catch (err) {
+    console.error("💥 Error fetching all submissions:", err);
+    res.status(500).json({ error: err.message });
+  }
+};
+
