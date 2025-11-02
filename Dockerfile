@@ -1,20 +1,36 @@
-# Stage 1: Build React app
-FROM node:18 AS frontend
+# ================================
+# 🏗️ Stage 1 — Build React Frontend
+# ================================
+FROM node:20 AS frontend
 WORKDIR /app/frontend
+
+# Copy and install dependencies
 COPY frontend/package*.json ./
 RUN npm install
+
+# Copy all frontend files and build
 COPY frontend/ .
 RUN npm run build
 
-# Stage 2: Backend + Serve Frontend
-FROM node:18 AS backend
+# ================================
+# ⚙️ Stage 2 — Setup Backend & Serve Frontend
+# ================================
+FROM node:20 AS backend
 WORKDIR /app
-COPY backend/package*.json ./
-RUN npm install
-COPY backend/ .
 
-# Copy frontend build into backend's public folder
+# Copy and install backend dependencies
+COPY backend/package*.json ./backend/
+WORKDIR /app/backend
+RUN npm install
+
+# Copy backend source files
+COPY backend/ ./ 
+
+# Copy built frontend into backend/public
 COPY --from=frontend /app/frontend/dist ./public
 
+# Expose backend port
 EXPOSE 4000
-CMD ["npm", "start", "--prefix", "backend"]
+
+# Start backend server
+CMD ["npm", "start"]
