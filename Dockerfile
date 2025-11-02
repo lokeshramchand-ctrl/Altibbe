@@ -10,7 +10,7 @@ RUN npm install
 
 # Copy all frontend files and build
 COPY frontend/ .
-RUN npm run build
+RUN npm run dev
 
 # ================================
 # ⚙️ Stage 2 — Setup Backend & Serve Frontend
