@@ -35,35 +35,41 @@ const ProductForm: React.FC = () => {
     }
   };
 
-  const handleSubmit = async (submittedAnswers: Record<string, any>) => {
-  try {
-    if (!data.category) {
-      alert("⚠️ Please select a category before submitting!");
-      return;
+  const handleSubmit = async (submittedAnswers?: Record<string, any>) => {
+    try {
+      if (!data.category) {
+        alert("⚠️ Please select a category before submitting!");
+        return;
+      }
+
+      // Prefer the passed answers; fallback to local state (just in case)
+      const rawAnswers = submittedAnswers || answers;
+
+      console.log("🔍 Raw answers before formatting:", rawAnswers);
+
+      const formattedAnswers = Object.entries(rawAnswers).map(([question, answer]) => ({
+        question,
+        answer,
+      }));
+
+      console.log("📝 Submitting answers:", formattedAnswers);
+
+      const res = await api.post(`/api/submissions/${data.category}`, {
+        answers: formattedAnswers,
+      });
+
+      console.log("✅ Backend response:", res.data);
+      alert("✅ Answers submitted successfully!");
+
+      // Reset UI
+      setStep(1);
+      setData({ name: "", category: "", price: "" });
+      setAnswers({});
+    } catch (err: any) {
+      console.error("💥 Submission failed:", err.response?.data || err.message);
+      alert("❌ Error submitting answers!");
     }
-
-    // Convert object → array
-    const formattedAnswers = Object.entries(submittedAnswers).map(([question, answer]) => ({
-      question,
-      answer,
-    }));
-
-    console.log("📝 Submitting formatted answers:", formattedAnswers);
-
-    const res = await api.post(`/api/submissions/${data.category}`, {
-      answers: formattedAnswers,
-    });
-
-    console.log("✅ Backend response:", res.data);
-    alert("✅ Answers submitted successfully!");
-    setStep(1);
-    setData({ name: "", category: "", price: "" });
-    setAnswers({});
-  } catch (err: any) {
-    console.error("💥 Submission failed:", err.response?.data || err.message);
-    alert("❌ Error submitting answers!");
-  }
-};
+  };
 
 
   return (

@@ -1,5 +1,5 @@
 const PDFDocument = require("pdfkit");
-const Submission = require("../models/Submission");
+const Submission = require("../models/submission.model");
 
 exports.generatePDF = async (req, res) => {
   const { category } = req.params;
